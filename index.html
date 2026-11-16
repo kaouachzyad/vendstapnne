@@ -77,6 +77,13 @@ input:focus,select:focus{border-color:var(--green)}
 .hint{font-size:.85rem;color:var(--muted);margin:6px 0 0}
 .link{background:none;border:0;padding:6px 0;margin-top:2px;font:inherit;font-size:.9rem;color:var(--green);text-decoration:underline;cursor:pointer}
 .radios{display:flex;gap:10px}
+.opt{font-weight:400;color:var(--muted)}
+.sr{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden}
+.drop{display:flex;align-items:center;justify-content:center;gap:10px;margin:0;font-weight:600;border:1.5px dashed var(--line);border-radius:9px;padding:14px;min-height:54px;cursor:pointer;background:var(--surface)}
+.drop:hover,#photos:focus+.thumbs,.drop:focus-within{border-color:var(--green)}
+.drop svg{width:22px;height:22px;stroke:var(--green);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.thumbs{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.thumbs img{width:64px;height:64px;object-fit:cover;border-radius:7px;border:1px solid var(--line)}
 .r{display:flex;align-items:center;gap:8px;flex:1;font-weight:500;margin:0;background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:11px 12px;min-height:46px;cursor:pointer}
 .r:has(input:checked){border-color:var(--green);background:var(--tint)}
 .r input{width:auto;min-height:0;margin:0;accent-color:var(--green)}
@@ -193,19 +200,23 @@ footer .fb{font-family:"Fraunces",Georgia,serif;font-weight:700;color:var(--ink)
     </div>
 
     <div class="card" id="estimation">
-      <form id="form" novalidate>
+      <form id="form" novalidate action="https://formsubmit.co/servicerachat@vendstapanne.fr" method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="_subject" value="Nouvelle demande de rachat – VendsTaPanne">
+        <input type="hidden" name="_template" value="table">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="_next" value="https://vendstapanne.fr/?envoye=1#estimation">
         <h2>Votre offre de rachat</h2>
         <p class="cap">Renseignez votre véhicule, on vous rappelle avec une offre.</p>
         <div class="grid">
           <div class="full plate">
             <label for="immat">Immatriculation</label>
-            <input id="immat" name="immat" type="text" placeholder="AB-123-CD" autocomplete="off" autocapitalize="characters" spellcheck="false">
+            <input id="immat" name="Immatriculation" type="text" placeholder="AB-123-CD" autocomplete="off" autocapitalize="characters" spellcheck="false">
             <p class="hint">Avec votre plaque, pas besoin de marque ni de modèle.</p>
             <button type="button" class="link" id="noplate">Je n’ai pas l’immatriculation</button>
           </div>
           <div class="mm" hidden>
             <label for="marque">Marque</label>
-            <select id="marque" name="marque">
+            <select id="marque" name="Marque">
               <option value="">Choisir</option>
               <option>Peugeot</option><option>Renault</option><option>Citroën</option><option>Dacia</option>
               <option>Volkswagen</option><option>Ford</option><option>Toyota</option><option>BMW</option>
@@ -216,27 +227,34 @@ footer .fb{font-family:"Fraunces",Georgia,serif;font-weight:700;color:var(--ink)
           </div>
           <div class="mm" hidden>
             <label for="modele">Modèle</label>
-            <input id="modele" name="modele" type="text" placeholder="Ex. 208, Clio, Golf" autocomplete="off">
+            <input id="modele" name="Modèle" type="text" placeholder="Ex. 208, Clio, Golf" autocomplete="off">
           </div>
           <div>
             <label for="km">Kilométrage</label>
-            <input id="km" name="km" type="number" inputmode="numeric" min="0" placeholder="Ex. 145000">
+            <input id="km" name="Kilométrage" type="number" inputmode="numeric" min="0" placeholder="Ex. 145000">
           </div>
           <div>
             <label for="lieu">Code postal</label>
-            <input id="lieu" name="lieu" type="text" inputmode="numeric" maxlength="5" placeholder="Ex. 75012" autocomplete="postal-code">
+            <input id="lieu" name="Code postal" type="text" inputmode="numeric" maxlength="5" placeholder="Ex. 75012" autocomplete="postal-code">
           </div>
           <div class="full">
             <label id="roulelbl">La voiture roule-t-elle ?</label>
-            <div class="radios" role="radiogroup" aria-labelledby="roulelbl"><label class="r"><input type="radio" name="roulant" value="oui"> Roulante</label><label class="r"><input type="radio" name="roulant" value="non"> Non roulante</label></div>
+            <div class="radios" role="radiogroup" aria-labelledby="roulelbl"><label class="r"><input type="radio" name="Roulante" value="oui"> Roulante</label><label class="r"><input type="radio" name="Roulante" value="non"> Non roulante</label></div>
           </div>
           <div>
             <label for="tel">Téléphone</label>
-            <input id="tel" name="tel" type="tel" inputmode="tel" required autocomplete="tel" placeholder="06 12 34 56 78">
+            <input id="tel" name="Téléphone" type="tel" inputmode="tel" required autocomplete="tel" placeholder="06 12 34 56 78">
           </div>
           <div>
             <label for="mail">Email</label>
-            <input id="mail" name="mail" type="email" autocomplete="email" placeholder="vous@exemple.fr">
+            <input id="mail" name="Email" type="email" autocomplete="email" placeholder="vous@exemple.fr">
+          </div>
+          <div class="full">
+            <label for="photos">Photos du véhicule <span class="opt">(facultatif, 5 max)</span></label>
+            <label class="drop" for="photos"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.5" r="3.5"/></svg><span id="photolbl">Ajouter des photos</span></label>
+            <input id="photos" type="file" accept="image/*" multiple class="sr">
+            <div class="thumbs" id="thumbs"></div>
+            <p class="hint">Extérieur, compteur, dégâts : plus vous en mettez, plus l’offre est précise.</p>
           </div>
         </div>
         <button class="cta" type="submit">Recevoir mon offre</button>
@@ -316,7 +334,7 @@ footer .fb{font-family:"Fraunces",Georgia,serif;font-weight:700;color:var(--ink)
 <main id="page" hidden></main>
 
 <div class="stickybar" id="home-only">
-  <a class="sb-call" href="#contact">Appeler</a>
+  <a class="sb-call" href="tel:+33758020599">Appeler</a>
   <a class="sb-est" href="#estimation">Estimer ma voiture</a>
 </div>
 
@@ -332,8 +350,21 @@ footer .fb{font-family:"Fraunces",Georgia,serif;font-weight:700;color:var(--ink)
 <script>
 (function(){
   var f=document.getElementById('form'),d=document.getElementById('done');
+  var ph=document.getElementById('photos'),th=document.getElementById('thumbs'),pl=document.getElementById('photolbl'),files=[];
+  ph.addEventListener('change',function(){
+    files=Array.prototype.slice.call(ph.files,0,5);th.innerHTML='';
+    files.forEach(function(x){var i=new Image();i.src=URL.createObjectURL(x);i.alt='';th.appendChild(i);});
+    pl.textContent=files.length?files.length+' photo'+(files.length>1?'s':'')+' ajoutée'+(files.length>1?'s':'')+' · modifier':'Ajouter des photos';
+  });
+  function shrink(x){return new Promise(function(res){
+    if(!/^image\//.test(x.type)||x.size<400000)return res(x);
+    var i=new Image(),u=URL.createObjectURL(x);
+    i.onload=function(){var k=Math.min(1,1600/Math.max(i.width,i.height)),c=document.createElement('canvas');c.width=Math.round(i.width*k);c.height=Math.round(i.height*k);c.getContext('2d').drawImage(i,0,0,c.width,c.height);URL.revokeObjectURL(u);c.toBlob(function(b){res(b?new File([b],x.name.replace(/\.\w+$/,'')+'.jpg',{type:'image/jpeg'}):x);},'image/jpeg',.75);};
+    i.onerror=function(){res(x);};i.src=u;});}
+  var sending=false;
   f.addEventListener('submit',function(e){
     e.preventDefault();
+    if(sending)return;
     var t=document.getElementById('tel');
     if(!t.value.replace(/\s/g,'').match(/^\+?[0-9.\-]{9,15}$/)){
       t.setCustomValidity('Indiquez un numéro de téléphone valide pour qu’on puisse vous rappeler.');
@@ -341,19 +372,22 @@ footer .fb{font-family:"Fraunces",Georgia,serif;font-weight:700;color:var(--ink)
       return;
     }
     t.setCustomValidity('');
-    var L={immat:'Immatriculation',marque:'Marque',modele:'Modèle',km:'Kilométrage',lieu:'Code postal',roulant:'Roulante',tel:'Téléphone',mail:'Email'};
-    var data={_subject:'Nouvelle demande de rachat – VendsTaPanne',_template:'table',_captcha:'false'},els=f.elements;
-    for(var i=0;i<els.length;i++){var el=els[i];if(!el.name||((el.type==='radio'||el.type==='checkbox')&&!el.checked))continue;if(el.value)data[L[el.name]||el.name]=el.value;}
+    sending=true;
     var b=f.querySelector('button[type=submit]');b.disabled=true;b.textContent='Envoi…';
-    fetch('https://formsubmit.co/ajax/servicerachat@vendstapanne.fr',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(data)})
-      .then(function(r){if(!r.ok)throw 0;ok();})
-      .catch(function(){b.disabled=false;b.textContent='Recevoir mon offre';alert('L’envoi n’a pas fonctionné. Appelez-nous au 07 58 02 05 99.');});
+    Promise.all(files.map(shrink)).then(function(out){
+      try{out.forEach(function(x,n){var dt=new DataTransfer();dt.items.add(x);var inp=document.createElement('input');inp.type='file';inp.name='Photo '+(n+1);inp.hidden=true;inp.files=dt.files;f.appendChild(inp);});}
+      catch(err){ph.name='attachment';}
+      var els=f.querySelectorAll('input[name],select[name]');
+      for(var i=0;i<els.length;i++){if(els[i].type!=='file'&&els[i].type!=='radio'&&!els[i].value)els[i].disabled=true;}
+      HTMLFormElement.prototype.submit.call(f);
+    });
   });
   function ok(){
     f.style.display='none';
     d.style.display='block';
     d.scrollIntoView({block:'nearest'});
   }
+  if(/[?&]envoye=1/.test(location.search))ok();
   document.getElementById('tel').addEventListener('input',function(){this.setCustomValidity('')});
   document.getElementById('noplate').addEventListener('click',function(){
     var m=document.querySelectorAll('.mm');
