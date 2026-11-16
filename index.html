@@ -173,7 +173,7 @@ footer .fb{font-family:"Fraunces",Georgia,serif;font-weight:700;color:var(--ink)
 <header>
   <div class="wrap">
     <a class="brand" href="#"><span class="mk" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 13l2-5a2 2 0 0 1 1.9-1.3h10.2A2 2 0 0 1 19 8l2 5"/><path d="M3 13h18v4a1 1 0 0 1-1 1h-1.5"/><path d="M5.5 18H4a1 1 0 0 1-1-1v-4"/><circle cx="7.5" cy="18" r="1.8"/><circle cx="16.5" cy="18" r="1.8"/></svg></span>VendsTaPanne</a>
-    <a class="call" href="#contact"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg><span class="todo">[TÉLÉPHONE]</span></a>
+    <a class="call" href="tel:+33758020599"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg>07 58 02 05 99</a>
   </div>
 </header>
 
@@ -323,8 +323,8 @@ footer .fb{font-family:"Fraunces",Georgia,serif;font-weight:700;color:var(--ink)
 <footer id="contact">
   <div class="wrap">
     <div class="fb">VendsTaPanne</div>
-    <div><span class="todo">[SOCIÉTÉ]</span>, SIREN <span class="todo">[SIREN]</span></div>
-    <div>Téléphone : <span class="todo">[TÉLÉPHONE]</span> · Email : <span class="todo">[EMAIL]</span></div>
+    <div><span class="todo">[SOCIÉTÉ]</span>, SIREN 981 182 611</div>
+    <div>Téléphone : <a href="tel:+33758020599">07 58 02 05 99</a> · Email : <a href="mailto:contact@vendstapanne.fr">contact@vendstapanne.fr</a></div>
     <div><a href="#">Mentions légales</a> · <a href="#">Politique de confidentialité</a></div>
   </div>
 </footer>
@@ -341,10 +341,18 @@ footer .fb{font-family:"Fraunces",Georgia,serif;font-weight:700;color:var(--ink)
       return;
     }
     t.setCustomValidity('');
+    var data={_subject:'Nouvelle demande VendsTaPanne',_template:'table',_captcha:'false'},els=f.elements;
+    for(var i=0;i<els.length;i++){var el=els[i];if(!el.name||((el.type==='radio'||el.type==='checkbox')&&!el.checked))continue;data[el.name]=el.value;}
+    var b=f.querySelector('button[type=submit]');b.disabled=true;b.textContent='Envoi…';
+    fetch('https://formsubmit.co/ajax/contact@vendstapanne.fr',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(data)})
+      .then(function(r){if(!r.ok)throw 0;ok();})
+      .catch(function(){b.disabled=false;b.textContent='Recevoir mon offre';alert('L’envoi n’a pas fonctionné. Appelez-nous au 07 58 02 05 99.');});
+  });
+  function ok(){
     f.style.display='none';
     d.style.display='block';
     d.scrollIntoView({block:'nearest'});
-  });
+  }
   document.getElementById('tel').addEventListener('input',function(){this.setCustomValidity('')});
   document.getElementById('noplate').addEventListener('click',function(){
     var m=document.querySelectorAll('.mm');
