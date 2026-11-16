@@ -341,8 +341,9 @@ footer .fb{font-family:"Fraunces",Georgia,serif;font-weight:700;color:var(--ink)
       return;
     }
     t.setCustomValidity('');
-    var data={_subject:'Nouvelle demande VendsTaPanne',_template:'table',_captcha:'false'},els=f.elements;
-    for(var i=0;i<els.length;i++){var el=els[i];if(!el.name||((el.type==='radio'||el.type==='checkbox')&&!el.checked))continue;data[el.name]=el.value;}
+    var L={immat:'Immatriculation',marque:'Marque',modele:'Modèle',km:'Kilométrage',lieu:'Code postal',roulant:'Roulante',tel:'Téléphone',mail:'Email'};
+    var data={_subject:'Nouvelle demande de rachat – VendsTaPanne',_template:'table',_captcha:'false'},els=f.elements;
+    for(var i=0;i<els.length;i++){var el=els[i];if(!el.name||((el.type==='radio'||el.type==='checkbox')&&!el.checked))continue;if(el.value)data[L[el.name]||el.name]=el.value;}
     var b=f.querySelector('button[type=submit]');b.disabled=true;b.textContent='Envoi…';
     fetch('https://formsubmit.co/ajax/servicerachat@vendstapanne.fr',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(data)})
       .then(function(r){if(!r.ok)throw 0;ok();})
