@@ -200,7 +200,7 @@ footer .fb{font-family:"Fraunces",Georgia,serif;font-weight:700;color:var(--ink)
     </div>
 
     <div class="card" id="estimation">
-      <form id="form" novalidate action="https://formsubmit.co/servicerachat@vendstapanne.fr" method="POST" enctype="multipart/form-data">
+      <form id="form" novalidate action="https://formsubmit.co/servicerachat@vendstapanne.fr" method="POST" enctype="multipart/form-data" target="fsframe">
         <input type="hidden" name="_subject" value="Nouvelle demande de rachat – VendsTaPanne">
         <input type="hidden" name="_template" value="table">
         <input type="hidden" name="_captcha" value="false">
@@ -260,6 +260,7 @@ footer .fb{font-family:"Fraunces",Georgia,serif;font-weight:700;color:var(--ink)
         <button class="cta" type="submit">Recevoir mon offre</button>
         <p class="legal">En envoyant votre demande, vous acceptez d’être recontacté pour votre estimation. <a href="#">Politique de confidentialité</a></p>
       </form>
+      <iframe name="fsframe" id="fsframe" title="envoi" hidden></iframe>
       <div class="done" id="done" role="status">
         <div class="ok"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></div>
         <h2>C’est bien reçu.</h2>
@@ -373,7 +374,8 @@ footer .fb{font-family:"Fraunces",Georgia,serif;font-weight:700;color:var(--ink)
     }
     t.setCustomValidity('');
     sending=true;
-    var b=f.querySelector('button[type=submit]');b.disabled=true;b.textContent='Envoi…';
+    var b=f.querySelector('button[type=submit]');b.disabled=true;b.textContent=files.length?'Envoi des photos…':'Envoi…';
+    var fr=document.getElementById('fsframe');fr.onload=function(){ok();};
     Promise.all(files.map(shrink)).then(function(out){
       try{out.forEach(function(x,n){var dt=new DataTransfer();dt.items.add(x);var inp=document.createElement('input');inp.type='file';inp.name='Photo '+(n+1);inp.hidden=true;inp.files=dt.files;f.appendChild(inp);});}
       catch(err){ph.name='attachment';}
