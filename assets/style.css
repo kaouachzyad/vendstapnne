@@ -170,3 +170,14 @@ footer .fb{font-family:"Fraunces",Georgia,serif;font-weight:700;color:var(--ink)
 .related a:hover{background:var(--tint)}
 .legalpage h2{font-size:1.3rem;margin:32px 0 10px}
 @media (max-width:520px){.related{grid-template-columns:1fr}}
+
+.brand .mk,footer .fb .mk{width:48px;height:auto;color:inherit}
+.brand .pn,footer .fb .pn{color:var(--green)}
+footer .fb{display:inline-flex;align-items:center;gap:9px}
+svg.lg{width:100%;height:auto;display:block;stroke:none!important}
+svg.lg .b,svg.lg .t{fill:var(--ink)}
+svg.lg .w{fill:var(--tint)}
+svg.lg .h{fill:var(--green)}
+svg.lg .l{fill:none!important;stroke:var(--muted)!important;stroke-width:2}
+header .call{white-space:nowrap}
+@media (max-width:420px){.brand{font-size:1.2rem;gap:7px}.brand .mk{width:38px}}
