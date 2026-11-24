@@ -216,15 +216,18 @@
   var box=document.createElement('div');box.className='fbox';box.hidden=true;f.appendChild(box);
   function fail(msg){box.hidden=false;box.innerHTML='<strong>Votre demande n’a pas pu partir.</strong> Appelez-nous directement, on vous répond tout de suite :<a class="callbig" href="tel:+33758020599">07 58 02 05 99</a>'+(msg?'<small>'+String(msg).replace(/</g,'&lt;')+'</small>':'');var b=f.querySelector('button[type=submit]');b.disabled=false;b.textContent='Réessayer';sending=false;}
   function withTimeout(p,ms,v){return Promise.race([p,new Promise(function(r){setTimeout(function(){r(v);},ms);})]);}
-  function post(fd,onProg,onUp){
+  var GS='https://script.google.com/macros/s/AKfycbxd8YhFNf9qIdkjuwPFb2gxYv_3Z93If97ipEeFKmDv9KQOiQpxCmzQDIi-exlNqhsP/exec';
+  function xhr(url,body,headers,onProg,onUp){
     return new Promise(function(res){
-      var x=new XMLHttpRequest();x.open('POST','https://formsubmit.co/ajax/servicerachat@vendstapanne.fr');x.setRequestHeader('Accept','application/json');x.timeout=90000;
-      if(x.upload){x.upload.onprogress=function(e){if(e.lengthComputable&&onProg)onProg(Math.round(e.loaded/e.total*100));};x.upload.onload=function(){if(onUp)onUp();};}
-      x.onload=function(){var r;try{r=JSON.parse(x.responseText);}catch(e){r={success:x.status<300?'true':'false',message:'HTTP '+x.status};}res(r);};
-      x.onerror=function(){res({success:'false',message:'Réseau'});};x.ontimeout=function(){res({success:'false',message:'Délai dépassé'});};
-      x.send(fd);
+      var x=new XMLHttpRequest();x.open('POST',url);for(var k in headers)x.setRequestHeader(k,headers[k]);x.timeout=90000;
+      x.onload=function(){var r;try{r=JSON.parse(x.responseText);}catch(e){r={success:false,message:'HTTP '+x.status};}res(r);};
+      x.onerror=function(){res({success:false,message:'Réseau'});};x.ontimeout=function(){res({success:false,message:'Délai dépassé'});};
+      x.send(body);
     });
   }
+  function b64(file){return new Promise(function(res){var r=new FileReader();r.onload=function(){res({data:String(r.result).split(',')[1],type:file.type||'image/jpeg'});};r.onerror=function(){res(null);};r.readAsDataURL(file);});}
+  function backup(champs){var fd=new FormData();for(var k in champs)fd.append(k,champs[k]);fd.append('_subject','Nouvelle demande de rachat – VendsTaPanne');fd.append('_template','table');fd.append('_captcha','false');return xhr('https://formsubmit.co/ajax/servicerachat@vendstapanne.fr',fd,{'Accept':'application/json'});}
+  function okr(r){return r&&(r.success===true||String(r.success)==='true');}
   f.addEventListener('submit',function(e){
     e.preventDefault();
     if(sending)return;
@@ -233,21 +236,22 @@
     }
     terr.hidden=true;box.hidden=true;sending=true;
     var b=f.querySelector('button[type=submit]');b.disabled=true;b.textContent=files.length?'Envoi des photos…':'Envoi…';
-    var fd=new FormData(),els=f.querySelectorAll('input[name],select[name]');
-    for(var i=0;i<els.length;i++){var el=els[i];if(el.type==='file'||((el.type==='radio'||el.type==='checkbox')&&!el.checked)||!el.value)continue;fd.append(el.name,el.value);}
-    var shown=false;
+    var champs={},els=f.querySelectorAll('input[name],select[name]');
+    for(var i=0;i<els.length;i++){var el=els[i];if(el.type==='file'||el.type==='hidden'||((el.type==='radio'||el.type==='checkbox')&&!el.checked)||!el.value)continue;champs[el.name]=el.value;}
+    var shown=false,dots=0,anim=files.length?setInterval(function(){dots=(dots+1)%4;b.textContent='Envoi des photos'+'.'.repeat(dots+1);},500):0;
     Promise.all(files.map(function(x){return withTimeout(shrink(x),5000,x);})).then(function(out){
-      if(!out.length)return post(fd);
-      var fp=new FormData();fd.forEach(function(v,k){fp.append(k,v);});
-      out.forEach(function(x,n){fp.append('attachment'+(n?n+1:''),x,'photo-'+(n+1)+'.jpg');});
-      return post(fp,function(p){if(!shown)b.textContent='Envoi des photos… '+p+' %';},function(){shown=true;ok();}).then(function(r){
-        if(String(r.success)==='true')return r;
-        fd.append('Photos','Le client a joint '+out.length+' photo(s) mais elles n’ont pas pu être envoyées : rappelez-le pour les demander.');
-        return post(fd);
-      });
+      return Promise.all(out.map(b64));
+    }).then(function(ph){
+      ph=ph.filter(Boolean);
+      return xhr(GS,JSON.stringify({champs:champs,photos:ph}),{'Content-Type':'text/plain;charset=utf-8'},
+        null,null).then(function(r){
+          if(okr(r))return r;
+          if(ph.length)champs['Photos']='Le client a joint '+ph.length+' photo(s) mais elles n’ont pas pu être envoyées : rappelez-le pour les demander.';
+          return backup(champs);
+        });
     }).then(function(r){
-      if(String(r.success)==='true'){if(!shown)ok();}else if(!shown)fail(r.message);
-    }).catch(function(){if(!shown)fail('');});
+      clearInterval(anim);if(okr(r)){if(!shown)ok();}else if(!shown)fail(r.message);
+    }).catch(function(){clearInterval(anim);if(!shown)fail('');});
   });
   function ok(){
     f.style.display='none';
