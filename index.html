@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/style.css?v=3">
+<link rel="stylesheet" href="/assets/style.css?v=4">
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "AutomotiveBusiness", "@id": "https://vendstapanne.fr/#org", "name": "VendsTaPanne", "legalName": "CHECK MY CAR", "url": "https://vendstapanne.fr/", "logo": "https://vendstapanne.fr/assets/favicon.svg?v=2", "telephone": "+33758020599", "openingHours": "Mo-Sa 09:00-20:00", "email": "servicerachat@vendstapanne.fr", "areaServed": {"@type": "Country", "name": "France"}, "description": "Rachat de véhicules en panne, accidentés ou sans contrôle technique, partout en France, avec estimation à distance.", "identifier": {"@type": "PropertyValue", "propertyID": "SIREN", "value": "981182611"}}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebSite", "name": "VendsTaPanne", "url": "https://vendstapanne.fr/", "inLanguage": "fr-FR", "publisher": {"@id": "https://vendstapanne.fr/#org"}}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Quels papiers dois-je préparer ?", "acceptedAnswer": {"@type": "Answer", "text": "Simplement votre carte grise et votre pièce d’identité. On se charge du certificat de cession et de toutes les démarches."}}, {"@type": "Question", "name": "Dois-je être présent à l’enlèvement ?", "acceptedAnswer": {"@type": "Answer", "text": "Non. Même si votre voiture est tombée en panne loin de chez vous, pas besoin de revenir sur place : on s’occupe de tout à distance, papiers du véhicule compris."}}, {"@type": "Question", "name": "Puis-je vendre sans contrôle technique ?", "acceptedAnswer": {"@type": "Answer", "text": "Oui, on rachète les voitures sans contrôle technique."}}, {"@type": "Question", "name": "Ma voiture a un crédit en cours, est-ce possible ?", "acceptedAnswer": {"@type": "Answer", "text": "Dites-le-nous quand on vous rappelle. La voiture doit être libre de gage pour être vendue, et on vous explique la marche à suivre."}}, {"@type": "Question", "name": "Combien de temps pour être payé ?", "acceptedAnswer": {"@type": "Answer", "text": "Vous recevez votre offre dans l'heure, et le paiement se fait par virement instantané dès que vous l'acceptez."}}, {"@type": "Question", "name": "Dans quelles régions intervenez-vous ?", "acceptedAnswer": {"@type": "Answer", "text": "Partout en France métropolitaine. Indiquez le code postal où se trouve la voiture : on organise l'enlèvement là où elle est, peu importe l'endroit."}}, {"@type": "Question", "name": "'+d.faq[j][0]+'", "acceptedAnswer": {"@type": "Answer", "text": "'+d.faq[j][1]+'"}}]}</script>
@@ -207,19 +207,23 @@
     pl.textContent=files.length?files.length+' photo'+(files.length>1?'s':'')+' ajoutée'+(files.length>1?'s':'')+' · modifier':'Ajouter des photos';
   });
   function shrink(x){return new Promise(function(res){
-    if(!/^image\//.test(x.type)||x.size<400000)return res(x);
+    if(!/^image\//.test(x.type)||x.size<250000)return res(x);
     var i=new Image(),u=URL.createObjectURL(x);
-    i.onload=function(){var k=Math.min(1,1600/Math.max(i.width,i.height)),c=document.createElement('canvas');c.width=Math.round(i.width*k);c.height=Math.round(i.height*k);c.getContext('2d').drawImage(i,0,0,c.width,c.height);URL.revokeObjectURL(u);c.toBlob(function(b){res(b?new File([b],x.name.replace(/\.\w+$/,'')+'.jpg',{type:'image/jpeg'}):x);},'image/jpeg',.75);};
+    i.onload=function(){var k=Math.min(1,1280/Math.max(i.width,i.height)),c=document.createElement('canvas');c.width=Math.round(i.width*k);c.height=Math.round(i.height*k);c.getContext('2d').drawImage(i,0,0,c.width,c.height);URL.revokeObjectURL(u);c.toBlob(function(b){res(b?new File([b],x.name.replace(/\.\w+$/,'')+'.jpg',{type:'image/jpeg'}):x);},'image/jpeg',.7);};
     i.onerror=function(){res(x);};i.src=u;});}
   var sending=false;
   var tel=document.getElementById('tel'),terr=document.createElement('p');terr.className='ferr';terr.hidden=true;tel.parentNode.appendChild(terr);
   var box=document.createElement('div');box.className='fbox';box.hidden=true;f.appendChild(box);
   function fail(msg){box.hidden=false;box.innerHTML='<strong>Votre demande n’a pas pu partir.</strong> Appelez-nous directement, on vous répond tout de suite :<a class="callbig" href="tel:+33758020599">07 58 02 05 99</a>'+(msg?'<small>'+String(msg).replace(/</g,'&lt;')+'</small>':'');var b=f.querySelector('button[type=submit]');b.disabled=false;b.textContent='Réessayer';sending=false;}
   function withTimeout(p,ms,v){return Promise.race([p,new Promise(function(r){setTimeout(function(){r(v);},ms);})]);}
-  function post(fd){
-    var ctl=window.AbortController?new AbortController():null;var tm=setTimeout(function(){if(ctl)ctl.abort();},30000);
-    return fetch('https://formsubmit.co/ajax/servicerachat@vendstapanne.fr',{method:'POST',body:fd,headers:{'Accept':'application/json'},signal:ctl?ctl.signal:undefined})
-      .then(function(r){clearTimeout(tm);return r.json().catch(function(){return {success:r.ok?'true':'false',message:'HTTP '+r.status};});});
+  function post(fd,onProg,onUp){
+    return new Promise(function(res){
+      var x=new XMLHttpRequest();x.open('POST','https://formsubmit.co/ajax/servicerachat@vendstapanne.fr');x.setRequestHeader('Accept','application/json');x.timeout=90000;
+      if(x.upload){x.upload.onprogress=function(e){if(e.lengthComputable&&onProg)onProg(Math.round(e.loaded/e.total*100));};x.upload.onload=function(){if(onUp)onUp();};}
+      x.onload=function(){var r;try{r=JSON.parse(x.responseText);}catch(e){r={success:x.status<300?'true':'false',message:'HTTP '+x.status};}res(r);};
+      x.onerror=function(){res({success:'false',message:'Réseau'});};x.ontimeout=function(){res({success:'false',message:'Délai dépassé'});};
+      x.send(fd);
+    });
   }
   f.addEventListener('submit',function(e){
     e.preventDefault();
@@ -231,17 +235,19 @@
     var b=f.querySelector('button[type=submit]');b.disabled=true;b.textContent=files.length?'Envoi des photos…':'Envoi…';
     var fd=new FormData(),els=f.querySelectorAll('input[name],select[name]');
     for(var i=0;i<els.length;i++){var el=els[i];if(el.type==='file'||((el.type==='radio'||el.type==='checkbox')&&!el.checked)||!el.value)continue;fd.append(el.name,el.value);}
+    var shown=false;
     Promise.all(files.map(function(x){return withTimeout(shrink(x),5000,x);})).then(function(out){
+      if(!out.length)return post(fd);
       var fp=new FormData();fd.forEach(function(v,k){fp.append(k,v);});
       out.forEach(function(x,n){fp.append('attachment'+(n?n+1:''),x,'photo-'+(n+1)+'.jpg');});
-      return post(out.length?fp:fd).then(function(r){
+      return post(fp,function(p){if(!shown)b.textContent='Envoi des photos… '+p+' %';},function(){shown=true;ok();}).then(function(r){
         if(String(r.success)==='true')return r;
-        if(out.length){fd.append('Photos','Le client a joint '+out.length+' photo(s) mais elles n’ont pas pu être envoyées : rappelez-le pour les demander.');return post(fd);}
-        return r;
+        fd.append('Photos','Le client a joint '+out.length+' photo(s) mais elles n’ont pas pu être envoyées : rappelez-le pour les demander.');
+        return post(fd);
       });
     }).then(function(r){
-      if(String(r.success)==='true')ok();else fail(r.message);
-    }).catch(function(err){fail(err&&err.name==='AbortError'?'Délai dépassé':'');});
+      if(String(r.success)==='true'){if(!shown)ok();}else if(!shown)fail(r.message);
+    }).catch(function(){if(!shown)fail('');});
   });
   function ok(){
     f.style.display='none';
