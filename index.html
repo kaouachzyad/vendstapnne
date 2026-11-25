@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/style.css?v=4">
+<link rel="stylesheet" href="/assets/style.css?v=5">
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "AutomotiveBusiness", "@id": "https://vendstapanne.fr/#org", "name": "VendsTaPanne", "legalName": "CHECK MY CAR", "url": "https://vendstapanne.fr/", "logo": "https://vendstapanne.fr/assets/favicon.svg?v=2", "telephone": "+33758020599", "openingHours": "Mo-Sa 09:00-20:00", "email": "servicerachat@vendstapanne.fr", "areaServed": {"@type": "Country", "name": "France"}, "description": "Rachat de véhicules en panne, accidentés ou sans contrôle technique, partout en France, avec estimation à distance.", "identifier": {"@type": "PropertyValue", "propertyID": "SIREN", "value": "981182611"}}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebSite", "name": "VendsTaPanne", "url": "https://vendstapanne.fr/", "inLanguage": "fr-FR", "publisher": {"@id": "https://vendstapanne.fr/#org"}}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Quels papiers dois-je préparer ?", "acceptedAnswer": {"@type": "Answer", "text": "Simplement votre carte grise et votre pièce d’identité. On se charge du certificat de cession et de toutes les démarches."}}, {"@type": "Question", "name": "Dois-je être présent à l’enlèvement ?", "acceptedAnswer": {"@type": "Answer", "text": "Non. Même si votre voiture est tombée en panne loin de chez vous, pas besoin de revenir sur place : on s’occupe de tout à distance, papiers du véhicule compris."}}, {"@type": "Question", "name": "Puis-je vendre sans contrôle technique ?", "acceptedAnswer": {"@type": "Answer", "text": "Oui, on rachète les voitures sans contrôle technique."}}, {"@type": "Question", "name": "Ma voiture a un crédit en cours, est-ce possible ?", "acceptedAnswer": {"@type": "Answer", "text": "Dites-le-nous quand on vous rappelle. La voiture doit être libre de gage pour être vendue, et on vous explique la marche à suivre."}}, {"@type": "Question", "name": "Combien de temps pour être payé ?", "acceptedAnswer": {"@type": "Answer", "text": "Vous recevez votre offre dans l'heure, et le paiement se fait par virement instantané dès que vous l'acceptez."}}, {"@type": "Question", "name": "Dans quelles régions intervenez-vous ?", "acceptedAnswer": {"@type": "Answer", "text": "Partout en France métropolitaine. Indiquez le code postal où se trouve la voiture : on organise l'enlèvement là où elle est, peu importe l'endroit."}}, {"@type": "Question", "name": "'+d.faq[j][0]+'", "acceptedAnswer": {"@type": "Answer", "text": "'+d.faq[j][1]+'"}}]}</script>
@@ -110,6 +110,7 @@
       <div class="done" id="done" role="status">
         <div class="ok"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></div>
         <h2>Merci, c’est bien reçu !</h2>
+        <p class="sendst" id="sendst" hidden></p>
         <p>Votre demande est entre de bonnes mains. On vous rappelle dans l'heure avec votre offre.</p>
         <p class="alt">Vous préférez nous parler tout de suite ?</p>
         <a class="callbig" href="tel:+33758020599"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg>07 58 02 05 99</a>
@@ -207,9 +208,9 @@
     pl.textContent=files.length?files.length+' photo'+(files.length>1?'s':'')+' ajoutée'+(files.length>1?'s':'')+' · modifier':'Ajouter des photos';
   });
   function shrink(x){return new Promise(function(res){
-    if(!/^image\//.test(x.type)||x.size<250000)return res(x);
+    if(!/^image\//.test(x.type)||x.size<180000)return res(x);
     var i=new Image(),u=URL.createObjectURL(x);
-    i.onload=function(){var k=Math.min(1,1280/Math.max(i.width,i.height)),c=document.createElement('canvas');c.width=Math.round(i.width*k);c.height=Math.round(i.height*k);c.getContext('2d').drawImage(i,0,0,c.width,c.height);URL.revokeObjectURL(u);c.toBlob(function(b){res(b?new File([b],x.name.replace(/\.\w+$/,'')+'.jpg',{type:'image/jpeg'}):x);},'image/jpeg',.7);};
+    i.onload=function(){var k=Math.min(1,1200/Math.max(i.width,i.height)),c=document.createElement('canvas');c.width=Math.round(i.width*k);c.height=Math.round(i.height*k);c.getContext('2d').drawImage(i,0,0,c.width,c.height);URL.revokeObjectURL(u);c.toBlob(function(b){res(b?new File([b],x.name.replace(/\.\w+$/,'')+'.jpg',{type:'image/jpeg'}):x);},'image/jpeg',.68);};
     i.onerror=function(){res(x);};i.src=u;});}
   var sending=false;
   var tel=document.getElementById('tel'),terr=document.createElement('p');terr.className='ferr';terr.hidden=true;tel.parentNode.appendChild(terr);
@@ -238,20 +239,22 @@
     var b=f.querySelector('button[type=submit]');b.disabled=true;b.textContent=files.length?'Envoi des photos…':'Envoi…';
     var champs={},els=f.querySelectorAll('input[name],select[name]');
     for(var i=0;i<els.length;i++){var el=els[i];if(el.type==='file'||el.type==='hidden'||((el.type==='radio'||el.type==='checkbox')&&!el.checked)||!el.value)continue;champs[el.name]=el.value;}
-    var shown=false,dots=0,anim=files.length?setInterval(function(){dots=(dots+1)%4;b.textContent='Envoi des photos'+'.'.repeat(dots+1);},500):0;
+    var st=document.getElementById('sendst'),shown=false;
+    if(files.length){shown=true;ok();st.hidden=false;st.className='sendst wait';st.textContent='Envoi de vos photos en cours… gardez cette page ouverte quelques secondes.';}
+    function stDone(good,msg){if(!shown)return;st.className='sendst '+(good?'good':'bad');st.textContent=good?'✓ Votre demande et vos photos nous sont bien parvenues.':'Les photos n’ont pas pu partir'+(msg?' ('+msg+')':'')+'. Appelez-nous, ou envoyez-les par SMS au 07 58 02 05 99.';}
     Promise.all(files.map(function(x){return withTimeout(shrink(x),5000,x);})).then(function(out){
       return Promise.all(out.map(b64));
     }).then(function(ph){
       ph=ph.filter(Boolean);
-      return xhr(GS,JSON.stringify({champs:champs,photos:ph}),{'Content-Type':'text/plain;charset=utf-8'},
-        null,null).then(function(r){
-          if(okr(r))return r;
+      return xhr(GS,JSON.stringify({champs:champs,photos:ph}),{'Content-Type':'text/plain;charset=utf-8'},null,null).then(function(r){
+          if(okr(r)){r.photosOk=true;return r;}
           if(ph.length)champs['Photos']='Le client a joint '+ph.length+' photo(s) mais elles n’ont pas pu être envoyées : rappelez-le pour les demander.';
           return backup(champs);
         });
     }).then(function(r){
-      clearInterval(anim);if(okr(r)){if(!shown)ok();}else if(!shown)fail(r.message);
-    }).catch(function(){clearInterval(anim);if(!shown)fail('');});
+      if(okr(r)){if(shown)stDone(!!r.photosOk||!files.length,r.photosOk?'':'demande reçue sans les photos');else ok();}
+      else if(shown)stDone(false,r.message);else fail(r.message);
+    }).catch(function(){if(shown)stDone(false,'');else fail('');});
   });
   function ok(){
     f.style.display='none';

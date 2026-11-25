@@ -189,3 +189,7 @@ header .call{white-space:nowrap}
 .fbox{margin-top:14px;padding:14px;border:1px solid #F2B8B5;background:#FEF3F2;color:#7A271A;border-radius:10px;text-align:center;font-size:.95rem}
 .fbox .callbig{margin:10px auto 0;display:flex;max-width:280px}
 .fbox small{display:block;margin-top:8px;color:#9A6B66;font-size:.75rem}
+.sendst{font-size:.9rem;font-weight:600;border-radius:8px;padding:8px 12px;margin:6px auto 4px;max-width:420px}
+.sendst.wait{background:var(--tint);color:var(--muted)}
+.sendst.good{background:#E7F6EC;color:#146C3A}
+.sendst.bad{background:#FEF3F2;color:#B42318}
